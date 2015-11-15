@@ -12,13 +12,15 @@ import Foundation
 class Obstacle : CCNode {
     weak var topCarrot : CCNode!
     weak var bottomCarrot : CCNode!
+    weak var goal : CCNode!
     
     //carrot at the top reaches at least 30 points into the screen for a 3.5-inch iPhone
-    let topCarrotMinimumPositionY : CGFloat = 128
+    let topCarrotMinimumPositionY : CGFloat = 50
     //carrot always sticks at least 30 points out of the ground
-    let bottomCarrotMaximumPositionY : CGFloat = 440
+    let bottomCarrotMaximumPositionY : CGFloat = 380
     //describes how large the opening gap between the carrots should be.
     let carrotDistance : CGFloat = 142
+    
     
     func didLoadFromCCB() {
         //This changes the carrot's physics bodies to sensors. Setting the sensor value to true tells Chipmunk no actual collision feedback should be calculated, meaning the collision callback method does run but sensors will always allow the colliding objects to pass through the collision.
@@ -33,6 +35,15 @@ class Obstacle : CCNode {
         let range = bottomCarrotMaximumPositionY - carrotDistance - topCarrotMinimumPositionY
         topCarrot.position = ccp(topCarrot.position.x,topCarrotMinimumPositionY + (random * range));
         bottomCarrot.position = ccp(bottomCarrot.position.x, topCarrot.position.y + carrotDistance);
+        //to determine where the hell could coin be in bewtween topdown buildings
+        var goalYPosition = bottomCarrot.positionInPoints.y + (topCarrot.positionInPoints.y - bottomCarrot.positionInPoints.y)/2
+        goal.positionInPoints = ccp(goal.position.x, goalYPosition)
+        
+        //Testing
+        println(goalYPosition)
+        println(topCarrot.positionInPoints)
+        println(bottomCarrot.positionInPoints)
+        println(goal.positionInPoints)
     }
     
 

@@ -1,7 +1,8 @@
 import Foundation
 
+//declare that the MainScene class will implement (some of) the CCPhysicsCollisionDelegate protocol methods
 class MainScene : CCNode, CCPhysicsCollisionDelegate {
-    var scrollSpeed: CGFloat = 80
+    var scrollSpeed: CGFloat = 220
     
     weak var hero: CCSprite!
     weak var gamePhysicsNode: CCPhysicsNode!
@@ -15,7 +16,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     var obstacles: [CCNode] = []
     var firstObstaclePosition: CGFloat! = 280
     var firstDelayObstaclePoistion: CGFloat!
-    let distanceBetweenObstacles: CGFloat = 160
+    let distanceBetweenObstacles: CGFloat = 250
     
     weak var obstaclesLayer: CCNode!
     
@@ -28,6 +29,13 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     var points: NSInteger = 0
     weak var scoreLabel: CCLabelTTF!
+    weak var billionLabel: CCLabelTTF!
+    weak var getReadyLabel: CCLabelTTF!
+    
+    weak var coin: CCNode!
+    
+
+//*********************************************Functions**************************************************//
     
     func didLoadFromCCB() {
         gamePhysicsNode.collisionDelegate = self
@@ -37,10 +45,14 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     }
     
     override func update(delta: CCTime) {
+        //first obstacle position should be 200 pixel away from the hero
         firstDelayObstaclePoistion = (hero.position.x + 200)
-
+       
+        // scroll speed of your bunny while updating the positions of movable objects.
+        //By multiplying the scroll speed with delta time you ensure that the bunny always moves at the same speed, independent of the frame rate.
         hero.position = ccp(hero.position.x + scrollSpeed * CGFloat(delta), hero.position.y)
         gamePhysicsNode.position = ccp(gamePhysicsNode.position.x - scrollSpeed * CGFloat(delta), gamePhysicsNode.position.y)
+        
         
         //cancled the black line effect due to a change speed on HERO
         // clamp physics node and hero position to the next nearest pixel value to avoid black line artifacts
@@ -64,9 +76,10 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         let velocityY = clampf(Float(hero.physicsBody.velocity.y), -Float(CGFloat.max), 200)
         hero.physicsBody.velocity = ccp(0, CGFloat(velocityY))
         
-        // clamp angular velocity
+        //limit the rotation of the bunny and start a downward rotation if no touch occurred in a while
+        //First, you add the delta (change in) time to the sinceTouch value to capture how much time has passed since the last touch.
         sinceTouch += delta
-        hero.rotation = clampf(hero.rotation, -30, 90)
+        hero.rotation = clampf(hero.rotation, -10, 40)
         if (hero.physicsBody.allowsRotation) {
             let angularVelocity = clampf(Float(hero.physicsBody.angularVelocity), -2, 1)
             hero.physicsBody.angularVelocity = CGFloat(angularVelocity)
@@ -83,7 +96,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             let obstacleScreenPosition = convertToNodeSpace(obstacleWorldPosition)
             
             // obstacle moved past left side of screen?
-            if obstacleScreenPosition.x < (-obstacle.contentSize.width) {
+            if obstacleScreenPosition.x < (-obstacle.contentSize.width-100) {
                 obstacle.removeFromParent()
                 obstacles.removeAtIndex(find(obstacles, obstacle)!)
                 
@@ -91,8 +104,11 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
                 spawnNewObstacle()
             }
         }
-    }
+    }//END OF UPDATE METHOD
     
+    //applies an impulse to the bunny every time a touch is first detected:
+    //$override: the idea of inheritance - that is, a child class inherits methods and properties from its parent class.
+    //#MainScene.swift is a child of CCNode, which is indicated by the line MainScene: CCNode. CCNode has a touchBegan(...) method, so we must use the override keyword to indicate that our child class will override its parent's implementation of touchBegan(...).
     override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
         if (isGameOver == false) {
             // move up and rotate
@@ -118,6 +134,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         obstacle.setupRandomPosition()
         obstaclesLayer.addChild(obstacle)
         obstacles.append(obstacle)
+        
     }
     
     func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, hero nodeA: CCNode!, goal: CCNode!) -> ObjCBool {
@@ -127,6 +144,8 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         return true
     }
     
+    //implement a collision handler method. As parameter names you have to use the collision types level and hero that you defined earlier.
+    //The method above will be called whenever a object with collision type hero collides with an object of collision type level.
     func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, hero: CCNode!, level: CCNode!) -> ObjCBool {
         gameOver()
         return true
@@ -135,6 +154,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     func playGame(){
         //基本
         playButton.visible = false
+        getReadyLabel.visible = false       //tutorial mode invisble
         isGameBegin = false
         
         userInteractionEnabled = true
@@ -169,6 +189,10 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             var moveBack = CCActionEaseBounceOut(action: move.reverse())
             var shakeSequence = CCActionSequence(array: [move, moveBack])
             runAction(shakeSequence)
+            
+            //disable the score in game end mode
+            scoreLabel.visible = false
+            billionLabel.visible = false
         }
     }
 }
@@ -329,61 +353,32 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
 //
 //    //implement a collision handler method. As parameter names you have to use the collision types level and hero that you defined earlier.
 //    //The method above will be called whenever a object with collision type hero collides with an object of collision type level.
+
+
 //    func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, hero: CCNode!, level: CCNode!) -> ObjCBool {
 //        println("It dead")
 //        triggerGameOver()
 //        return true
 //    }
 //
-//    func restart() {
-//        let scene = CCBReader.loadAsScene("MainScene")
-//        CCDirector.sharedDirector().replaceScene(scene)
-//    }
+
 //
-//    func triggerGameOver() {
-//        if (gameOver == false) {
-//            gameOver = true
-//            restartButton.visible = true
-//            scrollSpeed = 0
-//            hero.rotation = 90
-//            hero.physicsBody.allowsRotation = false
+
 //
-//            // just in case
-//            hero.stopAllActions()
-//
-//            let move = CCActionEaseBounceOut(action: CCActionMoveBy(duration: 0.2, position: ccp(0, 4)))
-//            let moveBack = CCActionEaseBounceOut(action: move.reverse())
-//            let shakeSequence = CCActionSequence(array: [move, moveBack])
-//            runAction(shakeSequence)
-//        }
-//    }
-//
-//    func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, hero nodeA: CCNode!, goal: CCNode!) -> ObjCBool {
-//        println("It pass the goal")
-//        goal.removeFromParent()
-//        points++
-//        scoreLabel.string = String(points)
-//        return true
-//    }
-//
-//    //1. Change the gravitational constant of the universe
-//    //2. Making code connections
-//    //3. Adding touch input #didload from ccb, touch began
-//    //4. Adding a speed limit upward #override update
-//    //5. Make the bunny Rotate #On touch, turn the bunny upwards #If no touch occurred for a while, turn the bunny downwards #Limit the rotation between slightly up and 90 degrees down (just like Flappy Bird)
-//    //6. Moving the bunny: moving the bunny with a constant speed while updating the positions of movable objects.
-//    //7. Setting up a "camera" #code connection, update method
-//    //8. Loop the ground #copy ground, physics enabled, create doc root var for both
-//    //9. Coding the ground #
-//    //10. Create Obstacles:
-//    //11. Generate obstacles in code
-//    //12. Spawning endless obstacles
-//    //13. Generating randomized obstacles: The first step is setting up a custom class for the obstacle.
-//    //14. Fixing the drawing order
-//    //15. Setting up a collision
-//    //16. Implementing "game over" #Bunny falls to ground   #Screen rumbles #Restart button appears     #Game restarts when restart button is pressed
-//    //17. Scoring Label
-//
-//
-//
-//}
+    //1. Change the gravitational constant of the universe
+    //2. Making code connections
+    //3. Adding touch input #didload from ccb, touch began
+    //4. Adding a speed limit upward #override update
+    //5. Make the bunny Rotate #On touch, turn the bunny upwards #If no touch occurred for a while, turn the bunny downwards #Limit the rotation between slightly up and 90 degrees down (just like Flappy Bird)
+    //6. Moving the bunny: moving the bunny with a constant speed while updating the positions of movable objects.
+    //7. Setting up a "camera" #code connection, update method
+    //8. Loop the ground #copy ground, physics enabled, create doc root var for both
+    //9. Coding the ground #
+    //10. Create Obstacles:
+    //11. Generate obstacles in code
+    //12. Spawning endless obstacles
+    //13. Generating randomized obstacles: The first step is setting up a custom class for the obstacle.
+    //14. Fixing the drawing order
+    //15. Setting up a collision
+    //16. Implementing "game over" #Bunny falls to ground   #Screen rumbles #Restart button appears     #Game restarts when restart button is pressed
+    //17. Scoring Label
