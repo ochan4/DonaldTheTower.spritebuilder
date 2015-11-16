@@ -165,7 +165,10 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     func playGame(){
         //基本
         playButton.visible = false
+        //CCTransition fadeaway = [CCTransition transitionFadeWithDuration:0.6]
         getReadyLabel.visible = false       //tutorial mode invisble
+        //[getReadyLabel runAction:[CCActionFadeOut CCActionInterval:1.0]]
+        
         isGameBegin = false
         
         userInteractionEnabled = true
