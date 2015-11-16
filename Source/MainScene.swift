@@ -1,4 +1,5 @@
 import Foundation
+import GameKit
 
 //declare that the MainScene class will implement (some of) the CCPhysicsCollisionDelegate protocol methods
 class MainScene : CCNode, CCPhysicsCollisionDelegate {
@@ -16,7 +17,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     var obstacles: [CCNode] = []
     var firstObstaclePosition: CGFloat! = 280
     var firstDelayObstaclePoistion: CGFloat!
-    let distanceBetweenObstacles: CGFloat = 250
+    let distanceBetweenObstacles: CGFloat = 275
     
     weak var obstaclesLayer: CCNode!
     
@@ -31,13 +32,12 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     weak var scoreLabel: CCLabelTTF!
     weak var billionLabel: CCLabelTTF!
     weak var getReadyLabel: CCLabelTTF!
-    
-    weak var coin: CCNode!
-    
+        
 
 //*********************************************Functions**************************************************//
-    
+    //This method is called every time a CCB file is loaded
     func didLoadFromCCB() {
+        
         gamePhysicsNode.collisionDelegate = self
         
         grounds.append(ground1)
@@ -61,6 +61,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
 //        gamePhysicsNode.position = ccp(round(gamePhysicsNode.position.x * scale) / scale, round(gamePhysicsNode.position.y * scale) / scale)
         
         // loop the ground whenever a ground image was moved entirely outside the screen
+        // perform a check for each ground sprite to see if it has moved off the screen, and if so, it will be moved to the far right and next to the ground sprite that's currently still visible on the screen.
         for ground in grounds {
             // get the world position of the ground
             let groundWorldPosition = gamePhysicsNode.convertToWorldSpace(ground.position)
@@ -79,12 +80,17 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         //limit the rotation of the bunny and start a downward rotation if no touch occurred in a while
         //First, you add the delta (change in) time to the sinceTouch value to capture how much time has passed since the last touch.
         sinceTouch += delta
+        
+        //In the next line, we limit the rotation of the bunny.
+        //$Clamping: means testing and optionally changing a given value so that it never exceeds the specified value range.
         hero.rotation = clampf(hero.rotation, -10, 40)
+        
+        //Next, you check if the bunny allows rotation because later, you will disable rotation upon death. If rotation is allowed, you clamp the angular velocity to slow down the rotation if it exceeds the value range. Then you apply that new angular velocity.
         if (hero.physicsBody.allowsRotation) {
             let angularVelocity = clampf(Float(hero.physicsBody.angularVelocity), -2, 1)
             hero.physicsBody.angularVelocity = CGFloat(angularVelocity)
         }
-        // rotate downwards if enough time passed since last touch
+        //Finally, you check if more than three tenths of a second passed since the last touch. If that is the case, a strong downward rotation impulse is applied. rotate downwards if enough time passed since last touch
         if (sinceTouch > 0.3 && isGameBegin == false) {
             let impulse = -18000.0 * delta
             hero.physicsBody.applyAngularImpulse(CGFloat(impulse))
@@ -119,6 +125,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     }
     
     func spawnNewObstacle() {
+        //If no other obstacles already exist the position of the first obstacle will be set to the firstObstaclePosition constant you just defined.
         var prevObstaclePos = firstObstaclePosition
         if obstacles.count == 0 {
             prevObstaclePos = firstDelayObstaclePoistion
@@ -128,15 +135,19 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             prevObstaclePos = obstacles.last!.position.x
         }
         
-        // create and add a new obstacle
+        // create and add a new obstacle by loading it from the Obstacle.ccb file
+        //declare the value returned and assigned to the obstacle constant as being of class Obstacle
         let obstacle = CCBReader.load("Obstacle") as! Obstacle
+        //and places it within the defined distance of the last existing obstacle.
         obstacle.position = ccp(prevObstaclePos + distanceBetweenObstacles, 0)
+        //calling the setupRandomPosition method after assigning the initial position.
         obstacle.setupRandomPosition()
         obstaclesLayer.addChild(obstacle)
         obstacles.append(obstacle)
-        
+
     }
     
+    //The method will be called whenever a object with collision type hero collides with an object of collision type level.
     func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, hero nodeA: CCNode!, goal: CCNode!) -> ObjCBool {
         goal.removeFromParent()
         points++
@@ -171,6 +182,10 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     func gameOver() {
         if (isGameOver == false) {
             isGameOver = true
+            
+            //*****save score to send to GameEnd file or other files******************
+            GameStateSingleton.sharedInstance.lastscore = points
+
             var gameEndPopover = CCBReader.load("GameEnd") as! GameEnd
             gameEndPopover.positionType = CCPositionType(xUnit: .Normalized, yUnit: .Normalized, corner: .BottomLeft)
             gameEndPopover.position = ccp(0.5, 0.5)
@@ -199,172 +214,6 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
 
 
 
-
-
-
-//import Foundation
-//
-////declare that the MainScene class will implement (some of) the CCPhysicsCollisionDelegate protocol methods
-//class MainScene: CCNode, CCPhysicsCollisionDelegate {
-//    weak var hero: CCSprite!
-//    weak var gamePhysicsNode : CCPhysicsNode!
-//
-//    var sinceTouch : CCTime = 0
-//
-//    var scrollSpeed : CGFloat = 80
-//
-//    weak var ground1 : CCSprite!
-//    weak var ground2 : CCSprite!
-//    var grounds = [CCSprite]()  // initializes an empty array
-//
-//    var obstacles : [CCNode] = [] //You will use the obstacles array to keep track of the obstacles created.
-//    let firstObstaclePosition : CGFloat = 280 //x position of the first obstacle
-//    let distanceBetweenObstacles : CGFloat = 160 //and the distance between two obstacles
-//
-//    weak var obstaclesLayer : CCPhysicsNode!
-//
-//    weak var restartButton : CCButton!
-//    var gameOver = false
-//
-//    var points : NSInteger = 0
-//    weak var scoreLabel : CCLabelTTF!
-//
-//    //This method is called every time a CCB file is loaded
-//    func didLoadFromCCB() {
-//        userInteractionEnabled = true
-//        grounds.append(ground1)
-//        grounds.append(ground2)
-//
-//        gamePhysicsNode.collisionDelegate = self //assign MainScene as the collision delegate class
-//        obstaclesLayer.collisionDelegate = self
-//
-//        for i in 0...3 {
-//            spawnNewObstacle()
-//        }
-//    }
-//
-//
-//    //applies an impulse to the bunny every time a touch is first detected:
-//    //$override: the idea of inheritance - that is, a child class inherits methods and properties from its parent class.
-//    //#MainScene.swift is a child of CCNode, which is indicated by the line MainScene: CCNode. CCNode has a touchBegan(...) method, so we must use the override keyword to indicate that our child class will override its parent's implementation of touchBegan(...).
-//    override func touchBegan(touch: CCTouch!, withEvent event: CCTouchEvent!) {
-//        //applying an angular impulse to the physics body. You also need to reset the sinceTouch value every time a touch occurs
-//        //ensure that the user cannot "jump" when the game is over
-//        if (gameOver == false) {
-//            hero.physicsBody.applyImpulse(ccp(0, 400))
-//            hero.physicsBody.applyAngularImpulse(10000)
-//            sinceTouch = 0
-//        }
-//
-//    }
-//
-//    override func update(delta: CCTime) {
-//        //limit the bunny's vertical velocity
-//        //$Clamping: means testing and optionally changing a given value so that it never exceeds the specified value range.
-//        let velocityY = clampf(Float(hero.physicsBody.velocity.y), -Float(CGFloat.max), 200)
-//        hero.physicsBody.velocity = ccp(0, CGFloat(velocityY))
-//
-//        //limit the rotation of the bunny and start a downward rotation if no touch occurred in a while
-//        //First, you add the delta (change in) time to the sinceTouch value to capture how much time has passed since the last touch.
-//        sinceTouch += delta
-//        //In the next line, we limit the rotation of the bunny.
-//        hero.rotation = clampf(hero.rotation, -30, 90)
-//        //Next, you check if the bunny allows rotation because later, you will disable rotation upon death. If rotation is allowed, you clamp the angular velocity to slow down the rotation if it exceeds the value range. Then you apply that new angular velocity.
-//        if (hero.physicsBody.allowsRotation) {
-//            let angularVelocity = clampf(Float(hero.physicsBody.angularVelocity), -2, 1)
-//            hero.physicsBody.angularVelocity = CGFloat(angularVelocity)
-//        }
-//        //Finally, you check if more than three tenths of a second passed since the last touch. If that is the case, a strong downward rotation impulse is applied.
-//        if (sinceTouch > 0.3) {
-//            let impulse = -18000.0 * delta
-//            hero.physicsBody.applyAngularImpulse(CGFloat(impulse))
-//        }
-//
-//        // scroll speed of your bunny while updating the positions of movable objects.
-//        //By multiplying the scroll speed with delta time you ensure that the bunny always moves at the same speed, independent of the frame rate.
-//        hero.position = ccp(hero.position.x + scrollSpeed * CGFloat(delta), hero.position.y)
-//
-//        gamePhysicsNode.position = ccp(gamePhysicsNode.position.x - scrollSpeed * CGFloat(delta), gamePhysicsNode.position.y)
-//
-//        // clamp physics node and hero position to the next nearest pixel value to avoid black line artifacts
-//        let scale = CCDirector.sharedDirector().contentScaleFactor
-//        hero.position = ccp(round(hero.position.x * scale) / scale, round(hero.position.y * scale) / scale)
-//        gamePhysicsNode.position = ccp(round(gamePhysicsNode.position.x * scale) / scale, round(gamePhysicsNode.position.y * scale) / scale)
-//
-//        // loop the ground whenever a ground image was moved entirely outside the screen
-//        //perform a check for each ground sprite to see if it has moved off the screen, and if so, it will be moved to the far right and next to the ground sprite that's currently still visible on the screen.
-//        for ground in grounds {
-//            let groundWorldPosition = gamePhysicsNode.convertToWorldSpace(ground.position)
-//            let groundScreenPosition = convertToNodeSpace(groundWorldPosition)
-//            if groundScreenPosition.x <= (-ground.contentSize.width) {
-//                ground.position = ccp(ground.position.x + ground.contentSize.width * 2, ground.position.y)
-//            }
-//        }//end of loop
-//
-//        //It checks whether obstacles are off the screen and if so, removes that obstacle, then spawns a new obstacle.
-////        for (index, obstacle) in enumerate(obstacles) {
-////            let obstacleWorldPosition = gamePhysicsNode.convertToWorldSpace(obstacle.position)
-////            let obstacleScreenPosition = convertToNodeSpace(obstacleWorldPosition)
-////
-////            // obstacle moved past left side of screen?
-////            if obstacleScreenPosition.x < (-obstacle.contentSize.width) {
-////                obstacle.removeFromParent()
-////                obstacles.removeAtIndex(index)
-////
-////                // for each removed obstacle, add a new one
-////                spawnNewObstacle()
-//        for obstacle in obstacles.reverse() {
-//            let obstacleWorldPosition = gamePhysicsNode.convertToWorldSpace(obstacle.position)
-//            let obstacleScreenPosition = convertToNodeSpace(obstacleWorldPosition)
-//
-//            // obstacle moved past left side of screen?
-//            if obstacleScreenPosition.x < (-obstacle.contentSize.width) {
-//                obstacle.removeFromParent()
-//                obstacles.removeAtIndex(find(obstacles, obstacle)!)
-//
-//                // for each removed obstacle, add a new one
-//                spawnNewObstacle()
-//            }
-//        }
-//
-//    }//end of update
-//
-//    //the method that will take care of spawning obstacles
-//    func spawnNewObstacle() {
-//        //If no other obstacles already exist the position of the first obstacle will be set to the firstObstaclePosition constant you just defined.
-//        var prevObstaclePos = firstObstaclePosition
-//        if obstacles.count > 0 {
-//            prevObstaclePos = obstacles.last!.position.x
-//        }
-//
-//        // create and add a new obstacle by loading it from the Obstacle.ccb file
-//        //declare the value returned and assigned to the obstacle constant as being of class Obstacle
-//        let obstacle = CCBReader.load("Obstacle") as! Obstacle   // replace this line
-//
-//        //and places it within the defined distance of the last existing obstacle.
-//        obstacle.position = ccp(prevObstaclePos + distanceBetweenObstacles, 0)
-//        //calling the setupRandomPosition method after assigning the initial position.
-//        obstacle.setupRandomPosition()
-//        //在sprite builder 不在add child 到physicsNode里了 加到obstacle layer 里
-//        //gamePhysicsNode.addChild(obstacle)
-//        obstaclesLayer.addChild(obstacle)
-//        obstacles.append(obstacle)
-//    }//end of spawn
-//
-//    //implement a collision handler method. As parameter names you have to use the collision types level and hero that you defined earlier.
-//    //The method above will be called whenever a object with collision type hero collides with an object of collision type level.
-
-
-//    func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, hero: CCNode!, level: CCNode!) -> ObjCBool {
-//        println("It dead")
-//        triggerGameOver()
-//        return true
-//    }
-//
-
-//
-
-//
     //1. Change the gravitational constant of the universe
     //2. Making code connections
     //3. Adding touch input #didload from ccb, touch began

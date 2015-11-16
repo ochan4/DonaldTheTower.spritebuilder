@@ -65,6 +65,10 @@
 		9B60F0661BF276A200516548 /* Obstacle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B60F0651BF276A200516548 /* Obstacle.swift */; };
 		9B60F06E1BF2A53800516548 /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B60F06D1BF2A53800516548 /* Goal.swift */; };
 		9B60F09E1BF3C0A800516548 /* GameEnd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B60F09D1BF3C0A800516548 /* GameEnd.swift */; };
+		9BCCCAB91BF948BD00105AA1 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BCCCAB81BF948BD00105AA1 /* Images.xcassets */; };
+		9BCCCAD31BF956B500105AA1 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9BCCCAD21BF956B500105AA1 /* GameKit.framework */; };
+		9BCCCAD91BF95DC500105AA1 /* GameCenterInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCCCAD81BF95DC500105AA1 /* GameCenterInteractor.swift */; };
+		9BCCCAEA1BF98EDA00105AA1 /* GameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BCCCAE91BF98EDA00105AA1 /* GameData.swift */; };
 		B71F5911188484E7003F4D28 /* iPad-old.png in Resources */ = {isa = PBXBuildFile; fileRef = B71F5907188484E7003F4D28 /* iPad-old.png */; };
 		B71F5912188484E7003F4D28 /* iPad-old@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B71F5908188484E7003F4D28 /* iPad-old@2x.png */; };
 		B71F5913188484E7003F4D28 /* iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = B71F5909188484E7003F4D28 /* iPad.png */; };
@@ -179,6 +183,10 @@
 		9B60F0651BF276A200516548 /* Obstacle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Obstacle.swift; sourceTree = "<group>"; };
 		9B60F06D1BF2A53800516548 /* Goal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		9B60F09D1BF3C0A800516548 /* GameEnd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameEnd.swift; sourceTree = "<group>"; };
+		9BCCCAB81BF948BD00105AA1 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "DonaldTheTower iOS/Images.xcassets"; sourceTree = SOURCE_ROOT; };
+		9BCCCAD21BF956B500105AA1 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		9BCCCAD81BF95DC500105AA1 /* GameCenterInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCenterInteractor.swift; sourceTree = "<group>"; };
+		9BCCCAE91BF98EDA00105AA1 /* GameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameData.swift; sourceTree = "<group>"; };
 		B71F5907188484E7003F4D28 /* iPad-old.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iPad-old.png"; path = "Icons/iPad-old.png"; sourceTree = "<group>"; };
 		B71F5908188484E7003F4D28 /* iPad-old@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iPad-old@2x.png"; path = "Icons/iPad-old@2x.png"; sourceTree = "<group>"; };
 		B71F5909188484E7003F4D28 /* iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iPad.png; path = Icons/iPad.png; sourceTree = "<group>"; };
@@ -260,6 +268,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BCCCAD31BF956B500105AA1 /* GameKit.framework in Frameworks */,
 				7A97911819E631CD001FFC4D /* libcocos2d.a in Frameworks */,
 				8392007A18EE8E3300B6C429 /* GLKit.framework in Frameworks */,
 				B77F1B3217B978D7009739AE /* QuartzCore.framework in Frameworks */,
@@ -443,6 +452,8 @@
 				7A40362019DDEF0D007B6E8F /* Platforms */,
 				7A046D7519E84C36004C4763 /* MainScene.swift */,
 				9B60F09D1BF3C0A800516548 /* GameEnd.swift */,
+				9BCCCAD81BF95DC500105AA1 /* GameCenterInteractor.swift */,
+				9BCCCAE91BF98EDA00105AA1 /* GameData.swift */,
 				9B60F06D1BF2A53800516548 /* Goal.swift */,
 				9B60F0651BF276A200516548 /* Obstacle.swift */,
 				D352B48019EC608A00829775 /* MetalShaders */,
@@ -496,6 +507,7 @@
 		B77F1B3017B978D7009739AE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9BCCCAD21BF956B500105AA1 /* GameKit.framework */,
 				BC5399D31A44DCC90063F482 /* AndroidKit.framework */,
 				BC5399D41A44DCC90063F482 /* CoreJava.framework */,
 				BC5399D51A44DCC90063F482 /* GLActivityKit.framework */,
@@ -524,6 +536,7 @@
 		B77F1B4617B978D7009739AE /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9BCCCAB81BF948BD00105AA1 /* Images.xcassets */,
 				7A40366119DDF8C2007B6E8F /* Platforms */,
 				5B12100D197483EE004C1E1D /* res */,
 				B73789911807667A0076A88C /* Icons */,
@@ -735,6 +748,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B71F5919188484E7003F4D28 /* Settings.png in Resources */,
+				9BCCCAB91BF948BD00105AA1 /* Images.xcassets in Resources */,
 				B7378978180762440076A88C /* Default@2x.png in Resources */,
 				B71F5914188484E7003F4D28 /* iPad@2x.png in Resources */,
 				B71F5913188484E7003F4D28 /* iPad.png in Resources */,
@@ -824,8 +838,10 @@
 			files = (
 				B73789871807631A0076A88C /* main.m in Sources */,
 				7A046D7919E84ED5004C4763 /* MainScene.swift in Sources */,
+				9BCCCAD91BF95DC500105AA1 /* GameCenterInteractor.swift in Sources */,
 				9B60F0661BF276A200516548 /* Obstacle.swift in Sources */,
 				9B60F06E1BF2A53800516548 /* Goal.swift in Sources */,
+				9BCCCAEA1BF98EDA00105AA1 /* GameData.swift in Sources */,
 				5B121038197487F2004C1E1D /* AppDelegate.m in Sources */,
 				9B60F09E1BF3C0A800516548 /* GameEnd.swift in Sources */,
 			);
@@ -1108,6 +1124,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Donald The Tower";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1143,6 +1161,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "Donald The Tower";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

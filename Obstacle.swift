@@ -19,7 +19,7 @@ class Obstacle : CCNode {
     //carrot always sticks at least 30 points out of the ground
     let bottomCarrotMaximumPositionY : CGFloat = 380
     //describes how large the opening gap between the carrots should be.
-    let carrotDistance : CGFloat = 142
+    let carrotDistance : CGFloat = 125
     
     
     func didLoadFromCCB() {
